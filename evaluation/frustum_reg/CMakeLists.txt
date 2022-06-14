@@ -7,6 +7,7 @@ set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -Wall")
 add_subdirectory(pybind11)
 find_package(Eigen3)
 find_package(Ceres REQUIRED)
+add_definitions(-DCERES_USE_CXX11)
 
 set(MY_HEADERS
     ${EIGEN3_INCLUDE_DIR}

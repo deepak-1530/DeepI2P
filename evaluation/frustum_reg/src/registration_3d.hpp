@@ -49,17 +49,17 @@ struct GivenKOutsideImgError3D {
 
         // get the cost of (pixel_x, pixel_y) inside or outside image plane
         auto x_dist_to_boundary = T(W*0.5) - ceres::abs(pixel_x-T(W*0.5));
-        auto is_x_in = ceres::fmax(x_dist_to_boundary, T(0.0)) / x_dist_to_boundary;
+        auto is_x_in = std::max(x_dist_to_boundary, T(0.0)) / x_dist_to_boundary;
 
         auto y_dist_to_boundary = T(H*0.5) - ceres::abs(pixel_y-T(H*0.5));
-        auto is_y_in = ceres::fmax(y_dist_to_boundary, T(0.0)) / y_dist_to_boundary;
+        auto is_y_in = std::max(y_dist_to_boundary, T(0.0)) / y_dist_to_boundary;
 
-        auto is_front = ceres::fmax(p[2], T(0.0)) / p[2]; // front=1, back=0
+        auto is_front = std::max(p[2], T(0.0)) / p[2]; // front=1, back=0
 
         auto xy_dist = x_dist_to_boundary + y_dist_to_boundary;
 
         residuals[0] = xy_dist * is_front * is_x_in * is_y_in;
-        // residuals[1] = ceres::fmax(T(H*0.5) - ceres::abs(pixel_y-T(H*0.5)), T(0.0));
+        // residuals[1] = std::max(T(H*0.5) - ceres::abs(pixel_y-T(H*0.5)), T(0.0));
 
         // std::cout<<"pixel_x: "<<pixel_x<<", pixel_y: "<<pixel_y<<std::endl;
         // std::cout<<"residuals[0]: "<<residuals[0]<<std::endl;
@@ -118,11 +118,11 @@ struct GivenKInsideImgError3D {
         T pixel_x = fx * p[0] / p[2] + cx;
         T pixel_y = fy * p[1] / p[2] + cy;
         // get the cost of (pixel_x, pixel_y) inside or outside image plane
-        residuals[0] = ceres::fmax(-pixel_x, T(0.0)) + ceres::fmax(pixel_x - T(W), T(0.0));
-        residuals[1] = ceres::fmax(-pixel_y, T(0.0)) + ceres::fmax(pixel_y - T(H), T(0.0));
+        residuals[0] = std::max(-pixel_x, T(0.0)) + std::max(pixel_x - T(W), T(0.0));
+        residuals[1] = std::max(-pixel_y, T(0.0)) + std::max(pixel_y - T(H), T(0.0));
 
         // points inside image should have positive pz
-        residuals[2] = ceres::fmax(-p[2], T(0.0)) * T(100.0);
+        residuals[2] = std::max(-p[2], T(0.0)) * T(100.0);
         return true;
     }
     // Factory to hide the construction of the CostFunction object from
